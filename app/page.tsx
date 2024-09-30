@@ -1,101 +1,64 @@
+'use client'
 import Image from "next/image";
+import { Button } from "@/components/ui/button"
 
+import { useState, useTransition } from "react";
+import { Input } from "@/components/ui/input";
+import { decryption, encryption } from "@/actions";
+// import Dec from "@/components/decrypt";
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [text, setText] = useState('')
+  const [cipher, setCipher] = useState('')
+  const [Encrypted, setEncrypted] = useState('')
+  const [decode, setDecode] = useState('')
+  function input(e: React.ChangeEvent<HTMLInputElement>){
+    setText(e.target.value)
+    setCipher('')
+  }
+  const [isPending, startTransition] = useTransition()
+  function submitt(e: React.FocusEvent<HTMLFormElement>){
+    e.preventDefault()
+    // startTransition(()=>{
+      encryption({ text, key})
+      .then((e:string)=>{
+      setCipher(e)
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      })
+      decryption({text: Encrypted, key: key1})
+      .then((e:string)=>{
+        setDecode(e)
+
+      })
+    // })
+  }
+  function cipherus(e: React.ChangeEvent<HTMLInputElement>){
+    setEncrypted(e.target.value)
+  }
+  const [key, setKey] = useState('')
+  function inputkey(e: React.ChangeEvent<HTMLInputElement>){
+      setKey(e.target.value)
+  }
+  const [key1, setKey1] = useState('')
+  function inputkey1(e: React.ChangeEvent<HTMLInputElement>){
+    setKey1(e.target.value)
+}
+  return (
+    <div className="flex-col items-center justify-center mt-22" >
+      <form className="h-full mt-10 " onSubmit={submitt}>
+        <Input placeholder="Key" value={key} onChange={inputkey} className=" "/>
+        <Input placeholder="Text" value={text} onChange={input} className=" mt-4"></Input>
+        {cipher != '' && <div className="text-white mt-2">
+      Зашифрованная строка: {cipher}
+      </div>}
+      <div className="text-white mt-4"> Key1 = 26 - key</div>
+      <Input placeholder="Key1" value={key1} onChange={inputkey1} className=" mt-4"/>
+        <Input placeholder="Cipher" value={Encrypted} onChange={cipherus} className=" mt-4"/>
+        {decode !='' && 
+        <div className="text-white mt-2">
+          Расшифрованная строка: {decode}
+          </div>}
+        <Button type="submit" className="w-full p-2 rounded-xl mt-4" >Encrypt</Button>
+      </form>
     </div>
   );
 }
